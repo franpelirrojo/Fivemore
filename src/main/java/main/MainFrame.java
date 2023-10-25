@@ -1,7 +1,4 @@
-package view;
-
-import modelControl.ControlCrono;
-import org.jetbrains.annotations.NotNull;
+package main;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,10 +10,12 @@ public class MainFrame extends JFrame {
     private JButton btnIniciar;
     private JButton btnSeguir;
     private JButton btnCancelar;
-    private ControlCrono controlCrono;
 
     private JPanel contador;
     private JPanel botones;
+
+    private ControlCrono controlCrono;
+    private Crono cronometro;
 
     //Estados de la vista
     public enum Estado {PREPARACION, CONCENTRACION, DESCANSO, CANCELAR}
@@ -24,27 +23,36 @@ public class MainFrame extends JFrame {
 
     public MainFrame() {
         super("Pomodoro");
-        setVisible(true);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setResizable(false);
-
         setEstado(Estado.PREPARACION);
+        setVisible(true);
 
-        //Marcamos la lógica de cada botón y del estado de la vista en un unico listener
+        int y = (int) (getToolkit().getScreenSize().getHeight() - (getToolkit().getScreenSize().getHeight() + getHeight()));
+        int x = (int) (getToolkit().getScreenSize().getWidth() - (getToolkit().getScreenSize().getWidth() + getWidth()));
+
+        setLocation(x, y);
+        System.out.println(x + " " + y);
+
+        //Marcamos la lógica de cada botón en un unico listener
         ActionListener mainListener = new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object fuente = e.getSource();
 
                 if (fuente.equals(btnIniciar)){ //Comenzar a concentrarse
+                    controlCrono = new ControlCrono(MainFrame.this, cronometro);
                     controlCrono.execute();
                     setEstado(Estado.CONCENTRACION);
                 }else if (fuente.equals(btnCancelar)){
                     if (!controlCrono.isDone()){ //Si no ha terminado lo terminamos
                         controlCrono.cancel(true);
                     }
-                    //setEstado(Estado.CANCELAR);
+                    setEstado(Estado.CANCELAR);
+                } else if (fuente.equals(btnSeguir)) {
+                    controlCrono.execute();
+                    setEstado(Estado.CONCENTRACION);
                 }
             }
         };
@@ -75,7 +83,7 @@ public class MainFrame extends JFrame {
         botones.add(btnIniciar);
         botones.add(btnSeguir);
         botones.add(btnCancelar);
-        this.controlCrono = new ControlCrono(this);
+        cronometro = new Crono(0,1,1);
     }
 
     public void setEstado(Estado estado){
@@ -89,6 +97,7 @@ public class MainFrame extends JFrame {
             case DESCANSO -> btnSeguir.setEnabled(true);
             case CANCELAR -> {
                 btnCancelar.setEnabled(false);
+                btnSeguir.setEnabled(false);
                 btnIniciar.setEnabled(true);
                 lbCronometo.setText("00:05:00");
             }

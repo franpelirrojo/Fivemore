@@ -1,19 +1,15 @@
-package modelControl;
-
-import view.MainFrame;
+package main;
 
 import javax.swing.*;
 import java.util.List;
 
 public class ControlCrono extends SwingWorker<Void, Crono> {
-    private int vueltas;
     private Crono cronometro;
     private MainFrame view;
 
-    public ControlCrono(MainFrame view) {
-        cronometro = new Crono(0, 1);
+    public ControlCrono(MainFrame view, Crono cronometro) {
+        this.cronometro = cronometro;
         this.view = view;
-        vueltas = 1;
     }
 
     @Override
@@ -47,15 +43,10 @@ public class ControlCrono extends SwingWorker<Void, Crono> {
         if (isCancelled()){
             view.setEstado(MainFrame.Estado.CANCELAR);
         }else{
-            vueltas ++;
-            if (vueltas > 1){
-                int multi = vueltas * 2;
-                int horas = cronometro.getHoras() * multi;
-                int minutos = cronometro.getMinutos() * multi;
-                cronometro = new Crono(horas, minutos);
-            }
+            cronometro.setVueltas();
 
             view.setCrono(cronometro.toString());
+            view.setEstado(MainFrame.Estado.DESCANSO);
         }
     }
 }
