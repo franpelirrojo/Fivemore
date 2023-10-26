@@ -19,21 +19,13 @@ public class MainFrame extends JFrame {
 
     //Estados de la vista
     public enum Estado {PREPARACION, CONCENTRACION, DESCANSO, CANCELAR}
-    private Estado estado;
 
     public MainFrame() {
-        super("Pomodoro");
+        super("Fivemore");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setResizable(false);
         setEstado(Estado.PREPARACION);
-        setVisible(true);
-
-        int y = (int) (getToolkit().getScreenSize().getHeight() - (getToolkit().getScreenSize().getHeight() + getHeight()));
-        int x = (int) (getToolkit().getScreenSize().getWidth() - (getToolkit().getScreenSize().getWidth() + getWidth()));
-
-        setLocation(x, y);
-        System.out.println(x + " " + y);
 
         //Marcamos la lógica de cada botón en un unico listener
         ActionListener mainListener = new ActionListener() {
@@ -63,11 +55,27 @@ public class MainFrame extends JFrame {
         add(contador, BorderLayout.CENTER);
         add(botones, BorderLayout.PAGE_END);
         pack();
+
+        //Tras pack() que renderiza y ajusta las medidas de los componentes y la ventana
+        //de acuerdo con el layout. La colocamos donde queremos, ya que tenemos las
+        //dimensiones reales que usmaos junto las limites de ventana del sistema
+        //para ajustar nuestra ventana.
+        Dimension medidas = getBounds().getSize();
+        Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
+
+        int py = winSize.height - medidas.height;
+        int px = winSize.width - medidas.width;
+        setLocation(px, py);
+
+        //La diferencia de tiempos no es muy grande por la velocidad de la jvm, pero
+        //el pack() ya crea los componentes y los coloca antes de ejecutarse en el
+        //proceso de ajuste de medidas. Está preparado para finalmente visualizarla.
+        setVisible(true);
     }
 
     private void inicializarComponentes(){
         //Inicializamos todos los componentes y los distribuimos
-        //Estado.PREPARACIÓN
+        //se ejecuta desde Estado.PREPARACIÓN
         contador = new JPanel();
         botones = new JPanel();
 
@@ -88,7 +96,9 @@ public class MainFrame extends JFrame {
 
     public void setEstado(Estado estado){
         switch (estado){
-            case PREPARACION -> inicializarComponentes();
+            case PREPARACION -> {
+                inicializarComponentes();
+            }
             case CONCENTRACION -> {
                 btnIniciar.setEnabled(false);
                 btnCancelar.setEnabled(true);
