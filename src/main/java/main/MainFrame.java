@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 public class MainFrame extends JFrame {
     private JLabel lbCronometo;
@@ -16,6 +18,9 @@ public class MainFrame extends JFrame {
 
     private ControlCrono controlCrono;
     private Crono cronometro;
+
+    private final int defaultX;
+    private final int defaultY;
 
     //Estados de la vista
     public enum Estado {PREPARACION, CONCENTRACION, DESCANSO, CANCELAR}
@@ -58,14 +63,23 @@ public class MainFrame extends JFrame {
 
         //Tras pack() que renderiza y ajusta las medidas de los componentes y la ventana
         //de acuerdo con el layout. La colocamos donde queremos, ya que tenemos las
-        //dimensiones reales que usmaos junto las limites de ventana del sistema
+        //dimensiones reales que usamos junto las limites de ventana del sistema
         //para ajustar nuestra ventana.
-        Dimension medidas = getBounds().getSize();
+        Dimension medidas = getSize();
         Rectangle winSize = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
 
-        int py = winSize.height - medidas.height;
-        int px = winSize.width - medidas.width;
-        setLocation(px, py);
+        defaultX = winSize.width - medidas.width;
+        defaultY = winSize.height - medidas.height;
+        setLocation(defaultX, defaultX);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentMoved(ComponentEvent e) {
+                if (getLocation().x != defaultX || getLocation().y != defaultY){
+                    setLocation(defaultX, defaultY);
+                }
+            }
+        });
 
         //La diferencia de tiempos no es muy grande por la velocidad de la jvm, pero
         //el pack() ya crea los componentes y los coloca antes de ejecutarse en el
@@ -96,9 +110,7 @@ public class MainFrame extends JFrame {
 
     public void setEstado(Estado estado){
         switch (estado){
-            case PREPARACION -> {
-                inicializarComponentes();
-            }
+            case PREPARACION -> inicializarComponentes();
             case CONCENTRACION -> {
                 btnIniciar.setEnabled(false);
                 btnCancelar.setEnabled(true);
@@ -113,8 +125,6 @@ public class MainFrame extends JFrame {
             }
             default -> throw new IllegalStateException("Unexpected value: " + estado);
         }
-
-        this.estado = estado;
     }
 
     //El controlador accede desde aquí al conometro
