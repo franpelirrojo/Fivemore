@@ -3,7 +3,8 @@ package main;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
-public class Crono {
+public class Crono implements CronoInterface{
+    private ViewInterface viewInterface;
     private LocalTime tiempo;
     private int horas;
     private int minutos;
@@ -32,12 +33,15 @@ public class Crono {
                 && tiempo.getSecond() == 0;
     }
 
-    @Override
-    public String toString() {
+    public String getTime() {
         return tiempo.format(DateTimeFormatter.ofPattern("HH:mm:ss"));
     }
 
     public void setVueltas() {
         vueltas = vueltas + 1;
+    }
+
+    public void setViewInterface(ViewInterface viewInterface) {
+        this.viewInterface = viewInterface;
     }
 }

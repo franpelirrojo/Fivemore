@@ -6,8 +6,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.Arrays;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements ViewInterface{
     private JLabel lbCronometo;
     private JButton btnIniciar;
     private JButton btnSeguir;
@@ -15,7 +16,9 @@ public class MainFrame extends JFrame {
 
     private JPanel contador;
     private JPanel botones;
+    private TitleBarPanel titleBarPanel;
 
+    private CronoInterface cronoInterface;
     private ControlCrono controlCrono;
     private Crono cronometro;
 
@@ -31,6 +34,7 @@ public class MainFrame extends JFrame {
         setLayout(new BorderLayout());
         setResizable(false);
         setEstado(Estado.PREPARACION);
+        setUndecorated(true);
 
         //Marcamos la lógica de cada botón en un unico listener
         ActionListener mainListener = new ActionListener() {
@@ -57,6 +61,7 @@ public class MainFrame extends JFrame {
         btnCancelar.addActionListener(mainListener);
         btnSeguir.addActionListener(mainListener);
 
+        add(titleBarPanel, BorderLayout.NORTH);
         add(contador, BorderLayout.CENTER);
         add(botones, BorderLayout.PAGE_END);
         pack();
@@ -92,8 +97,17 @@ public class MainFrame extends JFrame {
         //se ejecuta desde Estado.PREPARACIÓN
         contador = new JPanel();
         botones = new JPanel();
+        titleBarPanel = new TitleBarPanel();
 
-        lbCronometo = new JLabel("00:05:00");
+        titleBarPanel.setCloseInterface(new CloseInterface() {
+            @Override
+            public void close() {
+                dispose();
+            }
+        });
+
+
+        lbCronometo = new JLabel(cronoInterface.getTime());
         lbCronometo.setFont(new Font("Saint", Font.PLAIN, 32));
         contador.add(lbCronometo);
         btnIniciar = new JButton("Empezar a concentrarme");
