@@ -6,7 +6,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.util.Arrays;
 
 public class MainFrame extends JFrame implements ViewInterface{
     private JLabel lbCronometo;
@@ -18,22 +17,17 @@ public class MainFrame extends JFrame implements ViewInterface{
     private JPanel botones;
     private TitleBarPanel titleBarPanel;
 
-    private CronoInterface cronoInterface;
-    private ControlCrono controlCrono;
-    private Crono cronometro;
+    private Control control;
 
     private final int defaultX;
     private final int defaultY;
-
-    //Estados de la vista
-    public enum Estado {PREPARACION, CONCENTRACION, DESCANSO, CANCELAR}
 
     public MainFrame() {
         super("Fivemore");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setResizable(false);
-        setEstado(Estado.PREPARACION);
+        setState(State.PREPARACION);
         setUndecorated(true);
 
         //Marcamos la lógica de cada botón en un unico listener
@@ -43,17 +37,16 @@ public class MainFrame extends JFrame implements ViewInterface{
                 Object fuente = e.getSource();
 
                 if (fuente.equals(btnIniciar)){ //Comenzar a concentrarse
-                    controlCrono = new ControlCrono(MainFrame.this, cronometro);
-                    controlCrono.execute();
-                    setEstado(Estado.CONCENTRACION);
+                    control.start();
+                    setState(State.CONCENTRACION);
                 }else if (fuente.equals(btnCancelar)){
-                    if (!controlCrono.isDone()){ //Si no ha terminado lo terminamos
-                        controlCrono.cancel(true);
+                    if (!control.isDone()){ //Si no ha terminado lo terminamos
+                        control.cancel();
                     }
-                    setEstado(Estado.CANCELAR);
+                    setState(State.CANCELAR);
                 } else if (fuente.equals(btnSeguir)) {
-                    controlCrono.execute();
-                    setEstado(Estado.CONCENTRACION);
+                    control.start();
+                    setState(State.CONCENTRACION);
                 }
             }
         };
@@ -75,16 +68,7 @@ public class MainFrame extends JFrame implements ViewInterface{
 
         defaultX = winSize.width - medidas.width;
         defaultY = winSize.height - medidas.height;
-        setLocation(defaultX, defaultX);
-
-        addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentMoved(ComponentEvent e) {
-                if (getLocation().x != defaultX || getLocation().y != defaultY){
-                    setLocation(defaultX, defaultY);
-                }
-            }
-        });
+        setLocation(defaultX, defaultY);
 
         //La diferencia de tiempos no es muy grande por la velocidad de la jvm, pero
         //el pack() ya crea los componentes y los coloca antes de ejecutarse en el
@@ -98,6 +82,8 @@ public class MainFrame extends JFrame implements ViewInterface{
         contador = new JPanel();
         botones = new JPanel();
         titleBarPanel = new TitleBarPanel();
+        control = new Control();
+        control.setView(this);
 
         titleBarPanel.setCloseInterface(new CloseInterface() {
             @Override
@@ -106,8 +92,7 @@ public class MainFrame extends JFrame implements ViewInterface{
             }
         });
 
-
-        lbCronometo = new JLabel(cronoInterface.getTime());
+        lbCronometo = new JLabel(control.getTime());
         lbCronometo.setFont(new Font("Saint", Font.PLAIN, 32));
         contador.add(lbCronometo);
         btnIniciar = new JButton("Empezar a concentrarme");
@@ -119,11 +104,16 @@ public class MainFrame extends JFrame implements ViewInterface{
         botones.add(btnIniciar);
         botones.add(btnSeguir);
         botones.add(btnCancelar);
-        cronometro = new Crono(0,1,1);
     }
 
-    public void setEstado(Estado estado){
-        switch (estado){
+    @Override
+    public void bringUpToDate(String time) {
+        lbCronometo.setText(time);
+    }
+
+    @Override
+    public void setState(State state) {
+        switch (state){
             case PREPARACION -> inicializarComponentes();
             case CONCENTRACION -> {
                 btnIniciar.setEnabled(false);
@@ -135,14 +125,8 @@ public class MainFrame extends JFrame implements ViewInterface{
                 btnCancelar.setEnabled(false);
                 btnSeguir.setEnabled(false);
                 btnIniciar.setEnabled(true);
-                lbCronometo.setText("00:05:00");
             }
-            default -> throw new IllegalStateException("Unexpected value: " + estado);
+            default -> throw new IllegalStateException("Unexpected value: " + state);
         }
-    }
-
-    //El controlador accede desde aquí al conometro
-    public void setCrono(String tiempo){
-        lbCronometo.setText(tiempo);
     }
 }
