@@ -1,8 +1,5 @@
 package main;
 
-import javax.swing.*;
-import java.util.List;
-
 public class Control {
     private ViewInterface view;
     private ModelCrono cronometro;
@@ -11,18 +8,12 @@ public class Control {
 
     public Control() {
         vueltas = 0;
-        cronometro = new ModelCrono(0,1, vueltas);
+        cronometro = new ModelCrono(vueltas);
         cronometro.setControl(this);
     }
 
     public void start(){
-        if (vueltas == 0){
             cronometro.execute();
-        }else {
-            cronometro = new ModelCrono(0,1, vueltas);
-            cronometro.setControl(this);
-            cronometro.execute();
-        }
     }
 
     public void setView(ViewInterface view) {
@@ -42,7 +33,11 @@ public class Control {
     }
 
     public void newLoop(){
+        setState(State.DESCANSO);
         vueltas ++;
+        cronometro = new ModelCrono(vueltas);
+        cronometro.setControl(this);
+        setTime(cronometro.toString());
     }
 
     public boolean isDone(){
@@ -51,5 +46,9 @@ public class Control {
 
     public void cancel(){
         cronometro.cancel(true);
+        vueltas = 0;
+        cronometro = new ModelCrono(vueltas);
+        cronometro.setControl(this);
+        setTime(cronometro.toString());
     }
 }

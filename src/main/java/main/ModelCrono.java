@@ -9,7 +9,9 @@ public class ModelCrono extends SwingWorker<Void, String> {
     private Control control;
     private LocalTime tiempo;
 
-    public ModelCrono(int horas, int minutos, int vuelta) {
+    public ModelCrono(int vuelta) {
+        int horas = 0;
+        int minutos = 5;
 
         if (vuelta > 0){
             int multi = vuelta * 2;
@@ -51,12 +53,8 @@ public class ModelCrono extends SwingWorker<Void, String> {
     protected void done() {
         if (isCancelled()) {
             control.setState(State.CANCELAR);
-            control.setTime(toString());
         } else {
             control.newLoop();
-
-            control.setTime(toString());
-            control.setState(State.DESCANSO);
         }
     }
 

@@ -43,7 +43,6 @@ public class MainFrame extends JFrame implements ViewInterface{
                     if (!control.isDone()){ //Si no ha terminado lo terminamos
                         control.cancel();
                     }
-                    setState(State.CANCELAR);
                 } else if (fuente.equals(btnSeguir)) {
                     control.start();
                     setState(State.CONCENTRACION);
