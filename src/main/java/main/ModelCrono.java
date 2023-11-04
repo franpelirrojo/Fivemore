@@ -16,8 +16,12 @@ public class ModelCrono extends SwingWorker<Void, String> {
         if (vuelta > 0){
             int multi = vuelta * 2;
 
-            horas = horas * multi;
             minutos = minutos * multi;
+
+            if (minutos > 60){
+                horas = minutos%60;
+                minutos = minutos - (horas * 60);
+            }
         }
 
         tiempo = LocalTime.of(horas, minutos);
