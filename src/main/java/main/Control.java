@@ -1,5 +1,7 @@
 package main;
 
+import java.awt.*;
+
 public class Control {
     private ViewInterface view;
     private ModelCrono cronometro;
@@ -50,5 +52,9 @@ public class Control {
         cronometro = new ModelCrono(vueltas);
         cronometro.setControl(this);
         setTime(cronometro.toString());
+    }
+
+    public void beep(){
+        Toolkit.getDefaultToolkit().beep();
     }
 }
