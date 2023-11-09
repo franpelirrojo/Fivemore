@@ -12,7 +12,7 @@ public class ModelCrono extends SwingWorker<Void, String> {
 
     public ModelCrono(int vuelta) {
         int horas = 0;
-        int minutos = 1;
+        int minutos = 5;
 
         if (vuelta > 0){
             int multi = vuelta * 2;
