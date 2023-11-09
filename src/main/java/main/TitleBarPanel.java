@@ -12,7 +12,9 @@ public class TitleBarPanel extends JPanel {
     public TitleBarPanel() {
         setLayout(new FlowLayout(FlowLayout.RIGHT));
         btnCerrar = new JButton("X");
-        btnCerrar.setBackground(Color.RED);
+        btnCerrar.setFocusPainted(false);
+        btnCerrar.setForeground(new Color(240,240,240));
+        btnCerrar.setBackground(new Color(189,34,0));
 
         btnCerrar.addActionListener(new ActionListener() {
             @Override
