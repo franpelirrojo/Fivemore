@@ -6,7 +6,7 @@
 
     <groupId>dev.franpelirrojo</groupId>
     <artifactId>Fivemore</artifactId>
-    <version>1.0</version>
+    <version>1.2</version>
     <dependencies>
         <dependency>
             <groupId>org.jetbrains</groupId>
