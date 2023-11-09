@@ -6,7 +6,7 @@ public class Control {
     private ViewInterface view;
     private ModelCrono cronometro;
 
-    private int vueltas;
+    private double vueltas;
 
     public Control() {
         vueltas = 0;
