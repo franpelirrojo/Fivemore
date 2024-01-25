@@ -25,6 +25,7 @@ public class MainFrame extends JFrame implements ViewInterface{
     public MainFrame() {
         super("Fivemore");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
+        setAlwaysOnTop(true);
         setLayout(new BorderLayout());
         setResizable(false);
         setState(State.PREPARACION);
